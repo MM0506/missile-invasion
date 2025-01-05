@@ -1,0 +1,15 @@
+{
+    "name": "Missile Invasion",
+    "short_name": "Missile Invasion",
+    "description": "A space-themed missile dodging game",
+    "icons": [
+        {
+            "src": "favicon.png",
+            "sizes": "64x64",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "fullscreen",
+    "orientation": "landscape"
+} 

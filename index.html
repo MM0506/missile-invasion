@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Missile Invasion</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #202020;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        #status {
+            position: absolute;
+            color: white;
+            text-align: center;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        #canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 600px;
+            max-width: 100vw;
+            max-height: 100vh;
+            object-fit: contain;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            z-index: 2;
+        }
+        #pygame_container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            max-width: 100vw;
+            max-height: 100vh;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #audio-message {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 3;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="audio-message">Click anywhere to enable sound</div>
+    <div id="pygame_container" tabindex="0">
+        <div id="loading">Loading game...</div>
+        <div id="status">Downloading...</div>
+        <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+    <script>
+        // Audio context initialization
+        let audioCtx = null;
+        let audioInitialized = false;
+
+        function initAudio() {
+            if (!audioInitialized) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                audioInitialized = true;
+                document.getElementById('audio-message').style.display = 'none';
+            }
+        }
+
+        // Show audio message after loading
+        window.addEventListener('load', function() {
+            document.getElementById('audio-message').style.display = 'block';
+            document.getElementById('pygame_container').focus();
+        });
+
+        // Initialize audio on user interaction
+        window.addEventListener('click', initAudio);
+        window.addEventListener('keydown', initAudio);
+        window.addEventListener('touchstart', initAudio);
+
+        // Prevent default keyboard scrolling and ensure focus
+        window.addEventListener("keydown", function(e) {
+            if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                e.preventDefault();
+                document.getElementById('pygame_container').focus();
+            }
+        }, false);
+
+        // Handle window resize
+        function resizeCanvas() {
+            const container = document.getElementById('pygame_container');
+            const canvas = document.getElementById('canvas');
+            const aspectRatio = 800 / 600;
+            
+            let newWidth = window.innerWidth;
+            let newHeight = window.innerHeight;
+            
+            if (newWidth / newHeight > aspectRatio) {
+                newWidth = newHeight * aspectRatio;
+            } else {
+                newHeight = newWidth / aspectRatio;
+            }
+            
+            container.style.width = newWidth + 'px';
+            container.style.height = newHeight + 'px';
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Keep focus on the game container
+        setInterval(function() {
+            if (document.activeElement !== document.getElementById('pygame_container')) {
+                document.getElementById('pygame_container').focus();
+            }
+        }, 1000);
+    </script>
+    <script src="main.js" type="module"></script>
+</body>
+</html> 
